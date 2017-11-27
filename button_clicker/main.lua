@@ -37,7 +37,7 @@ end
 
 function love.draw()
   if gameState == 2 then
-    love.graphics.setColor(255, 0, 255, 255)
+    love.graphics.setColor(255, 0, 0, 255)
     love.graphics.circle("fill", button.x, button.y, button.size)
   end
 
