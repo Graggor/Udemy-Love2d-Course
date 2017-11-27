@@ -1,17 +1,14 @@
 message = 0
-test = 0
-pickle = 0
+param = 500
 
-while message < 10 do
-  message = message + 1
-  test = test - 5
+function increaseMessage(i)
+  i = i * 2
+  return i
 end
 
-for i = 1, 3, 1 do
-  pickle = pickle + i
-end
+message = increaseMessage(param)
 
 function love.draw()
   love.graphics.setFont(love.graphics.newFont(50))
-  love.graphics.print(pickle)
+  love.graphics.print(message)
 end
