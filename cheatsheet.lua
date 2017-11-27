@@ -60,3 +60,5 @@ for i,s in ipairs(myTable) do
   -- i is the current index, s is the current value
   foo = s
 end
+
+--https://love2d.org/wiki/General_math
