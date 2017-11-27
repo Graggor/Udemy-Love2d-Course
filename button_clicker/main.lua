@@ -10,6 +10,7 @@ function love.load()
   newGameTimer = 0
 
   myFont = love.graphics.newFont(40)
+  fsImage = love.graphics.newImage("img/pic.png")
 end
 
 function love.update(dt)
@@ -37,8 +38,9 @@ end
 
 function love.draw()
   if gameState == 2 then
-    love.graphics.setColor(255, 0, 0, 255)
-    love.graphics.circle("fill", button.x, button.y, button.size)
+    --love.graphics.setColor(255, 0, 0, 255)
+    --love.graphics.circle("line", button.x, button.y, button.size)
+    love.graphics.draw(fsImage, button.x - button.size, button.y - button.size, 0)
   end
 
   love.graphics.setFont(myFont)
