@@ -1,14 +1,14 @@
 message = 0
-param = 500
 
--- This function squares a value
-function increaseMessage(i)
-  local var = i
-  var = var * var
-  return var
-end
+-- Lua tables are associative arrays (key/value pairs) works just like php ([1] = value) Index starts at 1, not 0
+testScores = {}
 
-message = increaseMessage(param)
+-- table.insert inserts the value at the end of the already excisting array
+table.insert(testScores, 94)
+table.insert(testScores, 40)
+table.insert(testScores, 98)
+
+message = testScores[2]
 
 function love.draw()
   love.graphics.setFont(love.graphics.newFont(50))
