@@ -1,12 +1,14 @@
 message = 0
 param = 500
 
+--[[ This function doubles a value
 function increaseMessage(i)
   i = i * 2
   return i
 end
 
 message = increaseMessage(param)
+]]
 
 function love.draw()
   love.graphics.setFont(love.graphics.newFont(50))
