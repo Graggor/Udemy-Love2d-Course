@@ -11,6 +11,7 @@ function love.load()
   player.speed = 180
 
   zombies = {}
+  bullets = {}
 end
 
 function love.update(dt)
@@ -40,6 +41,41 @@ function love.update(dt)
       end
     end
   end
+
+  for i,b in ipairs(bullets) do
+    b.x = b.x + math.cos(b.direction) * b.speed * dt
+    b.y = b.y + math.sin(b.direction) * b.speed * dt
+  end
+
+  for i=#bullets,1,-1 do
+    local b = bullets[i]
+    if b.x < 0 or b.y < 0 or b.x > love.graphics.getWidth() or b.y > love.graphics.getHeight() then
+      table.remove(bullets, i )
+    end
+  end
+
+  for i,z in ipairs(zombies) do
+    for j,b in ipairs(bullets) do
+      if distanceBetween(z.x, z.y, b.x, b.y) < 20 then
+        z.dead = true
+        b.dead = true
+      end
+    end
+  end
+
+  for i=#zombies,1,-1 do
+    local z = zombies[i]
+    if z.dead == true then
+      table.remove(zombies, i)
+    end
+  end
+
+  for i=#bullets,1,-1 do
+    local b = bullets[i]
+    if b.dead == true then
+      table.remove(bullets, i)
+    end
+  end
 end -- love.update
 
 function love.draw()
@@ -48,6 +84,10 @@ function love.draw()
 
   for i,z in ipairs(zombies) do
     love.graphics.draw(sprites.zombie, z.x, z.y, zombie_player_angle(z), nil, nil, sprites.zombie:getWidth() /2, sprites.zombie:getHeight() / 2)
+  end
+
+  for i,b in ipairs(bullets) do
+    love.graphics.draw(sprites.bullet, b.x, b.y, nil, 0.5, 0.5, sprites.bullet:getWidth() /2, sprites.bullet:getHeight() /2)
   end
 end
 
@@ -64,13 +104,31 @@ function spawnZombie()
   zombie.x = math.random(0, love.graphics.getWidth())
   zombie.y = math.random(0, love.graphics.getHeight())
   zombie.speed = 100
+  zombie.dead = false
 
   table.insert(zombies, zombie)
+end
+
+function spawnBullet()
+  bullet = {}
+  bullet.x = player.x
+  bullet.y = player.y
+  bullet.speed = 500
+  bullet.direction = player_mouse_angle()
+  bullet.dead = false
+
+  table.insert(bullets, bullet)
 end
 
 function love.keypressed(key, scancode, isrepeat)
   if key == "space" then
     spawnZombie()
+  end
+end
+
+function love.mousepressed(x, y, b, isTouch)
+  if b == 1 then
+    spawnBullet()
   end
 end
 
