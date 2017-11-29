@@ -6,26 +6,46 @@ function love.load()
   sprites.background = love.graphics.newImage('sprites/background.png')
 
   player = {}
-  player.x = 200
-  player.y = 200
+  player.x = love.graphics.getWidth()/2
+  player.y = love.graphics.getHeight()/2
   player.speed = 180
 
   zombies = {}
   bullets = {}
+
+  gameState = 1
+  maxTime = 2
+  timer = maxTime
+  score = 0
+  newGameTimer = 0
+
+  myFont = love.graphics.newFont(40)
 end
 
 function love.update(dt)
-  if love.keyboard.isDown("s") then
-    player.y = player.y + player.speed * dt
+  if gameState == 1 then
+    if newGameTimer > 0 then
+      newGameTimer = newGameTimer - dt
+    end
+
+    if newGameTimer < 0 then
+      newGameTimer = 0
+    end
   end
-  if love.keyboard.isDown("w") then
-    player.y = player.y - player.speed * dt
-  end
-  if love.keyboard.isDown("a") then
-    player.x = player.x - player.speed * dt
-  end
-  if love.keyboard.isDown("d") then
-    player.x = player.x + player.speed * dt
+
+  if gameState == 2 then
+    if love.keyboard.isDown("s") and player.y < love.graphics.getHeight() then
+      player.y = player.y + player.speed * dt
+    end
+    if love.keyboard.isDown("w") and player.y > 0 then
+      player.y = player.y - player.speed * dt
+    end
+    if love.keyboard.isDown("a") and player.x > 0 then
+      player.x = player.x - player.speed * dt
+    end
+    if love.keyboard.isDown("d") and player.x < love.graphics.getWidth() then
+      player.x = player.x + player.speed * dt
+    end
   end
 
   for i,z in ipairs(zombies) do
@@ -38,6 +58,10 @@ function love.update(dt)
       -- Game over, remove zombies
       for i,z in ipairs(zombies) do
         zombies[i] = nil
+        newGameTimer = 4
+        gameState = 1
+        player.x = love.graphics.getWidth()/2
+        player.y = love.graphics.getHeight()/2
       end
     end
   end
@@ -54,11 +78,13 @@ function love.update(dt)
     end
   end
 
+  -- collision between zombie and bullet
   for i,z in ipairs(zombies) do
     for j,b in ipairs(bullets) do
       if distanceBetween(z.x, z.y, b.x, b.y) < 20 then
         z.dead = true
         b.dead = true
+        score = score + 1
       end
     end
   end
@@ -76,10 +102,29 @@ function love.update(dt)
       table.remove(bullets, i)
     end
   end
+
+  if gameState == 2 then
+    timer = timer - dt
+    if timer <= 0 then
+      spawnZombie()
+      maxTime = maxTime * 0.95
+      timer = maxTime
+    end
+  end
 end -- love.update
 
 function love.draw()
   love.graphics.draw(sprites.background, 0, 0)
+  love.graphics.setFont(myFont)
+
+  if gameState == 1 and newGameTimer == 0 then
+    love.graphics.printf("Click anywhere to begin!", 0, 50, love.graphics.getWidth(), "center")
+  elseif gameState == 1 and newGameTimer > 0 then
+    love.graphics.printf("New game loading: " .. math.ceil(newGameTimer) .. "...", 0, 50, love.graphics.getWidth(), "center")
+  end
+
+  love.graphics.printf("Score: " .. score, 0, love.graphics.getHeight() - 100, love.graphics.getWidth(), "center")
+
   love.graphics.draw(sprites.player, player.x, player.y, player_mouse_angle(), nil, nil, sprites.player:getWidth() / 2, sprites.player:getHeight() / 2)
 
   for i,z in ipairs(zombies) do
@@ -89,7 +134,7 @@ function love.draw()
   for i,b in ipairs(bullets) do
     love.graphics.draw(sprites.bullet, b.x, b.y, nil, 0.5, 0.5, sprites.bullet:getWidth() /2, sprites.bullet:getHeight() /2)
   end
-end
+end --love.draw
 
 function player_mouse_angle()
   return math.atan2(player.y - love.mouse.getY(), player.x - love.mouse.getX()) + math.pi
@@ -101,10 +146,26 @@ end
 
 function spawnZombie()
   zombie = {}
-  zombie.x = math.random(0, love.graphics.getWidth())
-  zombie.y = math.random(0, love.graphics.getHeight())
+  zombie.x = 0
+  zombie.y = 0
   zombie.speed = 100
   zombie.dead = false
+
+  local side = math.random(1, 4)
+
+  if side == 1 then
+    zombie.x = -30
+    zombie.y = math.random(0, love.graphics.getHeight())
+  elseif side == 2 then
+    zombie.x = math.random(0, love.graphics.getWidth())
+    zombie.y = -30
+  elseif side == 3 then
+    zombie.x = love.graphics.getWidth() + 30
+    zombie.y = math.random(0, love.graphics.getHeight())
+  elseif side == 4 then
+    zombie.x = math.random(0, love.graphics.getWidth())
+    zombie.y = love.graphics.getHeight() + 30
+  end
 
   table.insert(zombies, zombie)
 end
@@ -127,8 +188,15 @@ function love.keypressed(key, scancode, isrepeat)
 end
 
 function love.mousepressed(x, y, b, isTouch)
-  if b == 1 then
+  if b == 1 and gameState == 2 then
     spawnBullet()
+  end
+
+  if gameState == 1 and newGameTimer == 0 then
+    gameState = 2
+    maxTime = 2
+    timer = maxTime
+    score = 0
   end
 end
 
