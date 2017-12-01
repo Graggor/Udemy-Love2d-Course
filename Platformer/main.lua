@@ -1,5 +1,5 @@
 function love.load()
-  myWorld = love.physics.newWorld(0, 500)
+  myWorld = love.physics.newWorld(0, 500, false)
   myWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
   sprites = {}
@@ -20,7 +20,7 @@ function love.update(dt)
 end
 
 function love.draw()
-  love.graphics.draw(sprites.player_stand, player.body:getX(), player.body:getY(), nil, nil, nil, sprites.player_stand:getWidth()/2, sprites.player_stand:getHeight()/2)
+  love.graphics.draw(player.sprite, player.body:getX(), player.body:getY(), nil, player.direction, 1, sprites.player_stand:getWidth()/2, sprites.player_stand:getHeight()/2)
 
   for i,p in ipairs(platforms) do
     love.graphics.rectangle("fill", p.body:getX(), p.body:getY(), p.width, p.height)
