@@ -1,5 +1,5 @@
 function love.load()
-  myWorld = love.physics.newWorld(0, 500, false)
+  myWorld = love.physics.newWorld(0, 740, false)
   myWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
   sprites = {}
@@ -15,11 +15,16 @@ function love.load()
   platforms = {}
 
   spawnCoin(200, 100)
+  spawnCoin(200, 300)
 
   gameMap = sti("maps/1.lua")
 
   for i, obj in pairs(gameMap.layers["Platforms"].objects) do
     spawnPlatform(obj.x, obj.y, obj.width, obj.height)
+  end
+
+  for i, obj in pairs(gameMap.layers["Coins"].objects) do
+    spawnCoin(obj.x, obj.y)
   end
 end
 
@@ -27,6 +32,7 @@ function love.update(dt)
   myWorld:update(dt)
   playerUpdate(dt)
   gameMap:update(dt)
+  coinUpdate()
 
   for i,c in ipairs(coins) do
     c.animation:update(dt)
@@ -38,7 +44,7 @@ function love.draw()
   love.graphics.draw(player.sprite, player.body:getX(), player.body:getY(), nil, player.direction, 1, sprites.player_stand:getWidth()/2, sprites.player_stand:getHeight()/2)
 
   for i,c in ipairs(coins) do
-    c.animation:draw(sprites.coin_sheet, c.x, c.y)
+    c.animation:draw(sprites.coin_sheet, c.x, c.y, nil, nil, nil, 20.5, 21)
   end
 end
 
@@ -65,4 +71,8 @@ end
 
 function endContact(a, b, coll)
   player.grounded = false
+end
+
+function distanceBetween(x1, y1, x2, y2)
+  return math.sqrt((y2 - y1)^2 + (x2 - x1)^2)
 end

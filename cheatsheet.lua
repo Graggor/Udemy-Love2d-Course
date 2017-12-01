@@ -61,4 +61,9 @@ for i,s in ipairs(myTable) do
   foo = s
 end
 
+-- Distance calculation
+function distanceBetween(x1, y1, x2, y2)
+  return math.sqrt((y2 - y1)^2 + (x2 - x1)^2)
+end
+
 --https://love2d.org/wiki/General_math

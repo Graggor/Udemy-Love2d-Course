@@ -8,7 +8,7 @@ return {
   height = 10,
   tilewidth = 70,
   tileheight = 70,
-  nextobjectid = 52,
+  nextobjectid = 70,
   properties = {},
   tilesets = {
     {
@@ -566,6 +566,70 @@ return {
           y = 420,
           width = 420,
           height = 70,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      name = "Coins",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      draworder = "topdown",
+      properties = {},
+      objects = {
+        {
+          id = 65,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 420,
+          y = 350,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 67,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 630,
+          y = 350,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 68,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 910,
+          y = 210,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 69,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 1260,
+          y = 70,
+          width = 0,
+          height = 0,
           rotation = 0,
           visible = true,
           properties = {}
