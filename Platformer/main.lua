@@ -1,4 +1,5 @@
 function love.load()
+  love.graphics.setBackgroundColor(155, 215, 255)
   myWorld = love.physics.newWorld(0, 740, false)
   myWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
@@ -10,16 +11,28 @@ function love.load()
   -- Requiring external files
   require('player')
   require('coin')
+  require('tableshow')
   anim8 = require('anim8-master/anim8')
   sti = require('Simple-Tiled-Implementation/sti')
   cameraFile = require("hump-master/camera")
 
   cam = cameraFile()
 
-  platforms = {}
+  gameState = 1
+  myFont = love.graphics.newFont(30)
+  timer = 0
 
-  spawnCoin(200, 100)
-  spawnCoin(200, 300)
+  -- Saving the score
+  saveData = {}
+  saveData.bestTime = 999
+
+  if love.filesystem.exists("data.lua") then
+    local data = love.filesystem.load("data.lua")
+    data()
+  end
+  -- /Saving the Score
+
+  platforms = {}
 
   gameMap = sti("maps/1.lua")
 
@@ -44,6 +57,27 @@ function love.update(dt)  --Love.update
   for i,c in ipairs(coins) do
     c.animation:update(dt)
   end
+
+  if gameState == 2 then
+    timer = timer + dt
+  end
+
+  -- Game ends
+  if #coins == 0 and gameState == 2 then
+    gameState = 1
+    player.body:setPosition(70, 280)
+
+    if #coins == 0 then
+      for i, obj in pairs(gameMap.layers["Coins"].objects) do
+        spawnCoin(obj.x, obj.y)
+      end
+    end
+
+    if timer < saveData.bestTime then
+      saveData.bestTime = math.floor(timer)
+      love.filesystem.write("data.lua", table.show(saveData, "saveData"))
+    end
+  end --Game ends
 end                     --Love.update
 
 function love.draw()    --Love.draw
@@ -57,11 +91,25 @@ function love.draw()    --Love.draw
   end
 
   cam:detach()
+
+  if gameState == 1 then
+    love.graphics.setFont(myFont)
+    love.graphics.printf("Collect all coins and get the best time!", 0, 50, love.graphics.getWidth(), "center")
+    love.graphics.printf("Best time: ".. saveData.bestTime, 0, 150, love.graphics.getWidth(), "center")
+    love.graphics.printf("Press any key to begin!", 0, 250, love.graphics.getWidth(), "center")
+  end
+
+  love.graphics.print("Time: " .. math.floor(timer), 10, 660)
 end                     --Love.draw
 
 function love.keypressed(key, scancode, isrepeat)
-  if key == "space" and player.grounded == true then
+  if key == "space" and player.grounded == true and gameState == 2 then
     player.body:applyLinearImpulse(0, -3500)
+  end
+
+  if gameState == 1 then
+    gameState = 2
+    timer = 0
   end
 end
 
