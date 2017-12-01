@@ -14,10 +14,13 @@ function love.load()
 
   platforms = {}
 
-  spawnPlatform(50, 400, 300, 30)
   spawnCoin(200, 100)
 
   gameMap = sti("maps/1.lua")
+
+  for i, obj in pairs(gameMap.layers["Platforms"].objects) do
+    spawnPlatform(obj.x, obj.y, obj.width, obj.height)
+  end
 end
 
 function love.update(dt)
@@ -34,10 +37,6 @@ function love.draw()
   gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
   love.graphics.draw(player.sprite, player.body:getX(), player.body:getY(), nil, player.direction, 1, sprites.player_stand:getWidth()/2, sprites.player_stand:getHeight()/2)
 
-  for i,p in ipairs(platforms) do
-    love.graphics.rectangle("fill", p.body:getX(), p.body:getY(), p.width, p.height)
-  end
-
   for i,c in ipairs(coins) do
     c.animation:draw(sprites.coin_sheet, c.x, c.y)
   end
@@ -45,7 +44,7 @@ end
 
 function love.keypressed(key, scancode, isrepeat)
   if key == "space" and player.grounded == true then
-    player.body:applyLinearImpulse(0, -2500)
+    player.body:applyLinearImpulse(0, -3500)
   end
 end
 
