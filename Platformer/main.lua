@@ -10,16 +10,20 @@ function love.load()
   require('player')
   require('coin')
   anim8 = require('anim8-master/anim8')
+  sti = require('Simple-Tiled-Implementation/sti')
 
   platforms = {}
 
   spawnPlatform(50, 400, 300, 30)
   spawnCoin(200, 100)
+
+  gameMap = sti("maps/1.lua")
 end
 
 function love.update(dt)
   myWorld:update(dt)
   playerUpdate(dt)
+  gameMap:update(dt)
 
   for i,c in ipairs(coins) do
     c.animation:update(dt)
@@ -27,6 +31,7 @@ function love.update(dt)
 end
 
 function love.draw()
+  gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
   love.graphics.draw(player.sprite, player.body:getX(), player.body:getY(), nil, player.direction, 1, sprites.player_stand:getWidth()/2, sprites.player_stand:getHeight()/2)
 
   for i,p in ipairs(platforms) do
