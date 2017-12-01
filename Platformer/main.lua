@@ -7,10 +7,14 @@ function love.load()
   sprites.player_jump = love.graphics.newImage('sprites/player_jump.png')
   sprites.player_stand = love.graphics.newImage('sprites/player_stand.png')
 
+  -- Requiring external files
   require('player')
   require('coin')
   anim8 = require('anim8-master/anim8')
   sti = require('Simple-Tiled-Implementation/sti')
+  cameraFile = require("hump-master/camera")
+
+  cam = cameraFile()
 
   platforms = {}
 
@@ -28,25 +32,32 @@ function love.load()
   end
 end
 
-function love.update(dt)
+function love.update(dt)  --Love.update
   myWorld:update(dt)
   playerUpdate(dt)
   gameMap:update(dt)
   coinUpdate()
 
+  -- Camera is looking at the player
+  cam:lookAt(player.body:getX(), love.graphics.getHeight()/2)
+
   for i,c in ipairs(coins) do
     c.animation:update(dt)
   end
-end
+end                     --Love.update
 
-function love.draw()
+function love.draw()    --Love.draw
+  cam:attach()
+
   gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
   love.graphics.draw(player.sprite, player.body:getX(), player.body:getY(), nil, player.direction, 1, sprites.player_stand:getWidth()/2, sprites.player_stand:getHeight()/2)
 
   for i,c in ipairs(coins) do
     c.animation:draw(sprites.coin_sheet, c.x, c.y, nil, nil, nil, 20.5, 21)
   end
-end
+
+  cam:detach()
+end                     --Love.draw
 
 function love.keypressed(key, scancode, isrepeat)
   if key == "space" and player.grounded == true then
