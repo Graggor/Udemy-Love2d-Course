@@ -8,15 +8,22 @@ function love.load()
   sprites.player_stand = love.graphics.newImage('sprites/player_stand.png')
 
   require('player')
+  require('coin')
+  anim8 = require('anim8-master/anim8')
 
   platforms = {}
 
   spawnPlatform(50, 400, 300, 30)
+  spawnCoin(200, 100)
 end
 
 function love.update(dt)
   myWorld:update(dt)
   playerUpdate(dt)
+
+  for i,c in ipairs(coins) do
+    c.animation:update(dt)
+  end
 end
 
 function love.draw()
@@ -24,6 +31,10 @@ function love.draw()
 
   for i,p in ipairs(platforms) do
     love.graphics.rectangle("fill", p.body:getX(), p.body:getY(), p.width, p.height)
+  end
+
+  for i,c in ipairs(coins) do
+    c.animation:draw(sprites.coin_sheet, c.x, c.y)
   end
 end
 
