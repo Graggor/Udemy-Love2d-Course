@@ -1,5 +1,6 @@
 function love.load()
-  myWorld = love.physics.newWorld(0, 100)
+  myWorld = love.physics.newWorld(0, 500)
+  myWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
   sprites = {}
   sprites.coin_sheet = love.graphics.newImage('sprites/coin_sheet.png')
@@ -15,6 +16,7 @@ end
 
 function love.update(dt)
   myWorld:update(dt)
+  playerUpdate(dt)
 end
 
 function love.draw()
@@ -22,6 +24,12 @@ function love.draw()
 
   for i,p in ipairs(platforms) do
     love.graphics.rectangle("fill", p.body:getX(), p.body:getY(), p.width, p.height)
+  end
+end
+
+function love.keypressed(key, scancode, isrepeat)
+  if key == "space" and player.grounded == true then
+    player.body:applyLinearImpulse(0, -2500)
   end
 end
 
@@ -34,4 +42,12 @@ function spawnPlatform(x, y, width, height)
   platform.height = height
 
   table.insert(platforms, platform)
+end
+
+function beginContact(a, b, coll)
+  player.grounded = true
+end
+
+function endContact(a, b, coll)
+  player.grounded = false
 end
